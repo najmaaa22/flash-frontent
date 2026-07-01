@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
 import api from "../services/api";
 import FlashcardItem from "../components/FlashcardItem";
 
@@ -35,7 +34,6 @@ const FlashcardStudyPage = () => {
 
     const handleNext = () => {
         setIsFlipped(false);
-
         setCurrentIndex((prev) => {
             if (prev < flashcards.length - 1) {
                 return prev + 1;
@@ -44,18 +42,32 @@ const FlashcardStudyPage = () => {
         });
     };
 
+    const handlePrevious = () => {
+        setIsFlipped(false);
+        setCurrentIndex((prev) => Math.max(prev - 1, 0));
+    };
+
     const handleFinish = () => {
         navigate("/");
     };
 
     if (loading)
-        return <div className="loader">Loading flashcards...</div>;
+        return (
+            <div className="mx-auto mt-10 max-w-lg rounded-2xl bg-brand-surface p-8 text-center text-brand-muted shadow-soft">
+                Loading flashcards...
+            </div>
+        );
 
     if (flashcards.length === 0)
         return (
-            <div className="page-container">
-                <h2>No flashcards found for this category.</h2>
-                <button className="btn" onClick={() => navigate("/")}>
+            <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-black/[0.03] bg-brand-surface p-10 text-center shadow-soft">
+                <h2 className="font-display text-xl font-extrabold text-brand-text">
+                    No flashcards found for this category.
+                </h2>
+                <button
+                    className="mt-4 rounded-lg bg-brand-primary px-5 py-2.5 font-bold text-white transition-colors hover:bg-brand-primaryDark"
+                    onClick={() => navigate("/")}
+                >
                     Back to Categories
                 </button>
             </div>
@@ -64,15 +76,18 @@ const FlashcardStudyPage = () => {
     const isLastCard = currentIndex === flashcards.length - 1;
 
     return (
-        <div className="page-container study-page">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 rounded-2xl border border-black/[0.03] bg-brand-surface p-6 shadow-soft sm:p-10">
 
             {/* HEADER */}
-            <div className="study-header">
-                <button className="btn secondary" onClick={() => navigate("/")}>
+            <div className="flex w-full items-center justify-between">
+                <button
+                    className="rounded-lg bg-slate-100 px-4 py-2.5 font-bold text-brand-text transition-colors hover:bg-slate-200"
+                    onClick={() => navigate("/")}
+                >
                     ← Back
                 </button>
 
-                <div className="progress">
+                <div className="rounded-full bg-brand-surfaceSoft px-4 py-2 text-sm font-bold text-brand-iconText">
                     Card {currentIndex + 1} of {flashcards.length}
                 </div>
             </div>
@@ -85,11 +100,18 @@ const FlashcardStudyPage = () => {
             />
 
             {/* CONTROLS */}
-            <div className="controls">
+            <div className="flex w-full max-w-xs justify-center gap-3">
+                <button
+                    className="flex-1 rounded-lg bg-slate-100 px-4 py-3 font-bold text-brand-text transition-colors enabled:hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={currentIndex === 0}
+                    onClick={handlePrevious}
+                >
+                    Previous
+                </button>
 
                 {!isLastCard ? (
                     <button
-                        className="btn primary"
+                        className="flex-1 rounded-lg bg-brand-primary px-4 py-3 font-bold text-white transition-colors enabled:hover:bg-brand-primaryDark disabled:cursor-not-allowed disabled:opacity-40"
                         disabled={!isFlipped}
                         onClick={handleNext}
                     >
@@ -97,17 +119,16 @@ const FlashcardStudyPage = () => {
                     </button>
                 ) : (
                     <button
-                        className="btn primary"
+                        className="flex-1 rounded-lg bg-brand-primary px-4 py-3 font-bold text-white transition-colors enabled:hover:bg-brand-primaryDark disabled:cursor-not-allowed disabled:opacity-40"
                         disabled={!isFlipped}
                         onClick={handleFinish}
                     >
                         Finish
                     </button>
                 )}
-
             </div>
 
-            <p className="hint">
+            <p className="text-sm text-brand-muted">
                 Click the card to reveal the answer before moving.
             </p>
 
